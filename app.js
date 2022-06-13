@@ -22,7 +22,8 @@ app.use(helmet());
 app.get('/steps/', api.getAllSteps);
 app.get('/steps/:id', api.getStepById);
 app.post('/steps/', api.addStep);
-app.put('/steps/:id', api.updateStep);
+app.put('/steps/edit/:id', api.editStep);
 app.delete('/delete/:id', api.deleteStep);
 
 app.get('/levels/', api.getAllLevels);
+app.get('/levels/:id', api.getLevelById);
