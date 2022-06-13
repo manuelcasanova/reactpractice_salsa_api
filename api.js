@@ -34,25 +34,25 @@ const inMemoryLevels = [
   }
 ]
 
-const getAllSteps = async (request, response) => {
-  if (response) {
-    pool.query('SELECT * FROM steps', (error, results) => {
-      response.status(200).json(results.rows);
-    });
-  } else {
-    response.status(200).json(inMemorySteps);
-  }
-};
-
 // const getAllSteps = async (request, response) => {
 //   if (response) {
-//     pool.query('SELECT steps.title AS step_title, levels.title AS level_title, steps.level_id FROM steps JOIN levels on steps.level_id = levels.id', (error, results) => {
+//     pool.query('SELECT * FROM steps', (error, results) => {
 //       response.status(200).json(results.rows);
 //     });
 //   } else {
 //     response.status(200).json(inMemorySteps);
 //   }
 // };
+
+const getAllSteps = async (request, response) => {
+  if (response) {
+    pool.query('SELECT steps.id AS step_id, steps.title AS step_title, levels.title AS level_title, steps.level_id FROM steps JOIN levels on steps.level_id = levels.id', (error, results) => {
+      response.status(200).json(results.rows);
+    });
+  } else {
+    response.status(200).json(inMemorySteps);
+  }
+};
 
 
 const getAllLevels = async (request, response) => {
@@ -109,25 +109,17 @@ const addStep = async (request, response) => {
   if (response) {
     console.log("Added step id:", request.body)
 
-    // console.log("req.body.before query", request.body)
-    // console.log("req.body.level before query", request.body.level)
+    // console.log("req.body", request.body)
+    // console.log("req.body.level", request.body.level)
 
 
     pool.query('INSERT INTO steps (title, level_id) VALUES ($1, $2) RETURNING *', [title, level_id], (error, results) => {
-      // console.log("req.body.level:", request.body.level)
       // console.log("results.rows:", results.rows)
-      // console.log("reqbody2:", request.body)
       response.status(201).send(results.rows[0])
     });
-
-    // pool.query('SELECT levels.title, steps.level_id FROM levels JOIN steps on steps.level_id = levels.id WHERE level_id =$1', [level_id], (error, results) => {
-    //   response.status(201).json(results.rows[0]).send(`Level is ${level.title}`)
-    // } )
-
   } else {
     response.status(200).json(inMemorySteps); 
   }
-  // console.log("req.body.final", request.body)
 };
 
 const editStep = (request, response) => {
