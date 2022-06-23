@@ -46,8 +46,9 @@ const inMemoryLevels = [
 
 const getAllSteps = async (request, response) => {
   if (response) {
-    pool.query('SELECT steps.id AS step_id, steps.title AS step_title, levels.title AS level_title, steps.level_id FROM steps JOIN levels on steps.level_id = levels.id', (error, results) => {
+    pool.query('SELECT steps.id AS step_id, steps.title AS step_title, levels.title AS level_title, steps.level_id FROM steps JOIN levels on steps.level_id = levels.id ORDER BY steps.id DESC;', (error, results) => {
       response.status(200).json(results.rows);
+    
     });
   } else {
     response.status(200).json(inMemorySteps);
@@ -70,6 +71,7 @@ const getStepById = async (request, response) => {
   if (response) {
     pool.query('SELECT * FROM steps WHERE id =$1', [id], (error, results) => {
       response.status(200).json(results.rows);
+
     });
   } else {
     response.status(200).json(inMemoryLevels);
@@ -124,7 +126,25 @@ const addStep = async (request, response) => {
 
 const editStep = (request, response) => {
   const id = parseInt(request.params.id);
-  const { title, level_id } = request.body;
+  console.log("id", id)
+  let { title, level_id } = request.body;
+  console.log(`Step edited - New title: ${request.body.title} - New level_id: ${request.body.level_id}`)
+
+  if (request.body.level_id === "Beginner") {
+    level_id = 1;
+  } else if (request.body.level_id === "Intermediate") {
+    level_id = 2;
+  } else if (request.body.level_id === "Intermediate 2") {
+    level_id = 3;
+  } else if (request.body.level_id === "Advanced") {
+    level_id = 4;
+  } else if (request.body.level_id === "Advanced 2") {
+    level_id = 5;
+  } else if (request.body.level_id === "Hardcore") {
+    level_id = 6;
+  }
+
+
   pool.query(
     'UPDATE steps SET title = $1, level_id = $2 WHERE id = $3', [title, level_id, id], (error, results) => {
       response.status(200).send(`Step with id ${id} modified.`);
